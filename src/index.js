@@ -4,17 +4,17 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 
 // Internal packages:
+const {PORT, MONGODB_URI} = require("./config");
 const blogRoutes = require("./routes/blogRoutes");
+
+// TODO: Add Documentation for all express modules/functions;
+// TODO: Add AuthO authentication to protect all API routes;
 
 const app = express();
 
 // Middleware:
 app.use(bodyParser.json());
 app.use("/api", blogRoutes);
-
-
-// Setup server port
-var port = process.env.PORT || 8000;
 
 // Send message for default URL
 app.get('/', (req, res) => { 
@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 
 // Database Connection:
 mongoose.connect(
-    'mongodb://localhost:27017/express_blog', {
+    MONGODB_URI, {
         useNewUrlParser: true, 
         useFindAndModify: false,
         useCreateIndex: true,
@@ -31,6 +31,6 @@ mongoose.connect(
 });
 
 // Launch app to listen to specified port:  
-app.listen(port, () => {
-     console.log("Running Server on port " + port)
+app.listen(PORT, () => {
+     console.log("Running Server on port " + PORT);
 });
