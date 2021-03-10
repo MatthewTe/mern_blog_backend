@@ -1,2 +1,2 @@
-# mean_blog_application
-A blog and article MEAN application
+# MERN Stack Blog Application
+A blog post application built using the MERN stack
