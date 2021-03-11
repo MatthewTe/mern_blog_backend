@@ -1,5 +1,11 @@
-const dotenv = require('dotenv');
+/**
+ * DotEnv Environment Configuration 
+ * @module config
+ * @requires dotenv
+ */
 
+const dotenv = require('dotenv');
+ 
 const result = dotenv.config();
 
 // Error Catching for the .env reading:
@@ -10,7 +16,11 @@ else {
     console.log("Sucessfully Loaded Environment Config Params");
 }
 
-// dotenv environment variables:
+/**
+ * Using the dotenv package to extract environment params
+ * @const
+ * @type {object} 
+ */
 const { parsed : envs } = result;
 //console.log(envs);
 

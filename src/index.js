@@ -5,10 +5,11 @@ const bodyParser = require("body-parser");
 
 // Internal packages:
 const {PORT, MONGODB_URI} = require("./config");
-const blogRoutes = require("./routes/blogRoutes");
+const blogRoutes = require("./routes/blog_routes");
 
-// TODO: Add Documentation for all express modules/functions;
-// TODO: Add AuthO authentication to protect all API routes;
+// Configure the application in seperate app.js file and only have app.listen() in index.js.
+// Add unit testing for Post API endpoints.
+// Add unique permission system that locks post and update endpoints behined user auth.
 
 const app = express();
 
