@@ -3,6 +3,7 @@ const config = require("./config");
 const app = require("./app");
 
 // TODO:
+// Adding Hashing for JWT authentication.
 // Add unit testing for Post API endpoints.
 // Setup JSDOC API doc generation and install.
 

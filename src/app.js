@@ -4,6 +4,7 @@
  * @requires express 
  * @requires mongoose
  * @requires body-parser
+ * @requires cors
  * @requires config
  * @requires routes/blog_routes
  * @requires authentication/user_auth
@@ -13,6 +14,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 
 // Internal Imports:
 const config = require("./config");
@@ -37,6 +39,13 @@ mongoose.connect(
 });
 
 // Adding Application MiddleWare:
+
+/**
+ * MiddleWare that enables CORS Authentication
+ * @function
+ */
+app.use(cors()); 
+
 /**
  * Body-Parser Middleware
  * @function

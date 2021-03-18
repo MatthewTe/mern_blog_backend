@@ -29,7 +29,7 @@ const blogpostController = {
      * Post db model, seralizes them into JSON format and attaches them to the HTTP
      * response.
      * 
-     * It excludes the full body markdown content of the Post data model as it is intended
+     * It excludes the full body html content of the Post data model as it is intended
      * to serve an endpoint that queries blog post thumbnail data.
      * 
      * @param {e.Request} req - The HTTP request recieved from the endpoint.
@@ -40,11 +40,25 @@ const blogpostController = {
 
         try {
 
-            // Querying all blog posts from db:
-            const posts = await Post.find().select("-markdown");
+            // If no number of specific query params are provided query all: 
+            if (!req.query.numPosts) {
+                // Querying all blog posts from db:
+                const posts = await Post.find().sort("-createdOn");
 
-            // Returning all posts through response:
-            res.json(posts);    
+                // Returning all posts through response:
+                await res.json(posts);    
+            }
+
+            // Querying specific number of posts based on url params:
+            else {
+                postLimit = parseInt(req.query.numPosts);
+                const posts = await Post.find().sort("-createdOn").limit(postLimit);
+                
+                // Returning all posts through response:
+                await res.json(posts);    
+
+            }
+
         }
         
         catch (err) {
@@ -57,7 +71,7 @@ const blogpostController = {
      * db model that contain a specific category param {category}. The seralized result
      * is attached to the HTTP response.
      * 
-     * It excludes the full body markdown content of the Post data model as it is intended
+     * It excludes the full body html content of the Post data model as it is intended
      * to serve an endpoint that queries specific post categories thumbnail data.
      * 
      * @param {e.Request} req - The HTTP request recieved from the endpoint assumed to be a GET.
@@ -71,7 +85,7 @@ const blogpostController = {
         
         try {
             // Custom QuerySet based on url params:
-            const posts = await Post.find({category:postCategory}).select("-markdown");
+            const posts = await Post.find({category:postCategory}).select("-content");
             res.json(posts);
         }
         catch (err) {
@@ -97,9 +111,24 @@ const blogpostController = {
         // Querying the database for unique post:
         try {
 
-            // Database query:
-            const post = await Post.findOne({slug : req.params.postSlug});
-            res.json(post);
+            // If no number of specific query params are provided query all: 
+            if (!req.query.numPosts) {
+                // Querying all blog posts from db:
+                const posts = await Post.find({slug : req.params.postSlug}).sort("-createdOn");
+
+                // Returning all posts through response:
+                await res.json(posts);    
+            }
+
+            // Querying specific number of posts based on url params:
+            else {
+                postLimit = parseInt(req.query.numPosts);
+                const posts = await Post.find({slug : req.params.postSlug}).sort("-createdOn").limit(postLimit);
+                
+                // Returning all posts through response:
+                await res.json(posts);    
+
+            }
         }
 
         catch (err) {
@@ -115,24 +144,40 @@ const blogpostController = {
      * the necessary Post model fields as request.body parameters. It is these params that
      * are used to create the Post database model instance.
      * 
+     * The method assumes the following POST request parameters:
+     * {
+     *  title:
+     *  createdOn:
+     *  description:
+     *  url: 
+     *  html_content:
+     * category:
+     * }
+     * 
+     * The URL is a github url to a ipython notebook that the controller pulls down from github.
+     * The .ipynb notebook extracted form github is then converted into RAW html via nbconveter.
+     * That raw HTML is then stored in the database as the body content.
+     * 
+     * 
      * @param {e.Request} req - The HTTP request recieved from the endpoint assumed to be a POST.
      * @param {e.Response} res - the HTTP response sent to the client.
      * @returns {void}
      */
     async create (req, res) {
         try {
-
+            
             // Extracting the HTTP POST request body content:
             const reqContent = {
                 title : req.body.title,
                 createdOn : Date.now(),
                 description : req.body.description,
-                markdown : req.body.markdown,
+                git_url : req.body.git_url,
                 category : req.body.category
             };
 
             // Trying to add data to the database:
             const post = new Post(reqContent);
+
             const savedPost = await post.save();
 
             res.json(savedPost);
@@ -168,8 +213,8 @@ const blogpostController = {
                 // Performing an update of the model:
                 title: req.body.title,
                 description: req.body.description,
-                markdown: req.body.markdown,
-                category : req.body.category
+                category : req.body.category,
+                git_url: req.body.git_url
             }, {new : true})
 
             res.json(post); 
